@@ -8,12 +8,12 @@ import java.util.*;
 @Getter @EqualsAndHashCode
 public class Banco {
 
-    private String nome;
-    private Set<Conta> contas;
-    private List<Cliente> clientes;
+    private final String nome;
+    private final Set<Conta> contas;
+    private final List<Cliente> clientes;
 
-    public Banco(String nome) {
-        this.nome = nome;
+    public Banco() {
+        this.nome = "Bradesco";
         this.contas = new LinkedHashSet<>();
         this.clientes = new ArrayList<>();
     }
@@ -24,7 +24,7 @@ public class Banco {
 
     public void listarContas(){
         espacoConsole();
-        System.out.println("=== Lista de Contas ===");
+        System.out.println("=== Lista de Contas "+ this.getNome() + " ===");
         for (Conta conta: contas){
             imprimirInfoConta(conta);
         }
@@ -48,7 +48,6 @@ public class Banco {
 
     public void atualizarContas(Conta conta){
         contas.add(conta);
-
     }
 
     public void atualizarContas(Conta conta1, Conta conta2){
@@ -62,7 +61,7 @@ public class Banco {
 
     public void listarClientes(){
         espacoConsole();
-        System.out.println("=== Lista de Clientes ===\n");
+        System.out.println("=== Lista de Clientes " + this.nome + " ===\n");
 
         clientes.sort(new comparatorClientes());
         for(Cliente cliente : clientes){
@@ -70,7 +69,7 @@ public class Banco {
         }
     }
 
-    private class comparatorClientes implements Comparator<Cliente> {
+    private static class comparatorClientes implements Comparator<Cliente> {
 
         @Override
         public int compare(Cliente o1, Cliente o2) {

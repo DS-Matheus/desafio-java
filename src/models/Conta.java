@@ -6,7 +6,7 @@ import lombok.Getter;
 public abstract class Conta implements IConta{
 
     private final int AGENCIA_PADRAO = 1;
-    private int NUMERO_CONTA = 1;
+    private static int NUMERO_CONTA = 1;
     protected int agencia, numero, tipo;
     //Tipo 1 = Corrente, Tipo 2 = Poupança
     protected Double saldo;
@@ -22,18 +22,29 @@ public abstract class Conta implements IConta{
 
     @Override
     public void sacar(Double valor) {
-        this.saldo -= valor;
+        if (valor <= this.getSaldo()){
+            efetuarSaque(valor);
+        }
+        else
+            mensagemFaltaSaldo(valor);
     }
 
     @Override
     public void depositar(Double valor) {
         this.saldo += valor;
+        System.out.println("\n== Depósito concluído! ==");
+
+        System.out.println("R$ " + String.format("%.2f", valor) + " adicionados em conta " + getTipoConta() +
+                "\nAgradecemos a preferência " + this.getCliente().getNome());
     }
 
     @Override
     public void transferir(Double valor, Conta contaDestino) {
-        this.sacar(valor);
-        contaDestino.depositar(valor);
+        if (valor <= this.getSaldo()){
+            efetuarTransferencia(valor, contaDestino);
+        }
+        else
+            mensagemFaltaSaldo(valor);
     }
 
     protected void imprimirInfoConta() {
@@ -43,4 +54,40 @@ public abstract class Conta implements IConta{
         System.out.printf("Saldo: R$ %.2f%n", this.saldo);
     }
 
+    private String getTipoConta(){
+
+        String tipo = "";
+        switch (this.getTipo()){
+            case 1:
+                tipo = "corrente";
+                break;
+            case 2:
+                tipo = "poupança";
+                break;
+        }
+        return tipo;
+    }
+
+    private void efetuarSaque(Double valor){
+        this.saldo -= valor;
+        System.out.println("\n== Saque realizado! ==");
+
+        System.out.println("R$ " + String.format("%.2f", valor) + " deduzidos da conta " + getTipoConta() +
+                "\nAgradecemos a preferência " + this.getCliente().getNome());
+    }
+
+    private void efetuarTransferencia(Double valor, Conta contaDestino){
+        this.sacar(valor);
+        contaDestino.depositar(valor);
+        System.out.println("\n== Transferencia realizada com sucesso! ==\nR$ " + String.format("%.2f", valor)
+                + " enviados para a conta " + contaDestino.getTipoConta() + " de '" + contaDestino.getCliente().getNome() + "'"
+                + "\nSaldo atual: R$ " + String.format("%.2f",this.getSaldo())
+                + "\nAgradecemos a preferência " + this.getCliente().getNome());
+    }
+
+    private void mensagemFaltaSaldo(Double valor){
+        System.out.println("\n== Operação não realizada! ==" + "\nVocê não possuí saldo suficiente" +
+                "\nTitular: " + this.cliente.getNome() + "\nTipo de Conta: " + getTipoConta() +
+                "\nValor Saldo: R$ " + String.format("%.2f",this.getSaldo()) + "\nValor Operação: R$ " + String.format("%.2f",valor));
+    }
 }
